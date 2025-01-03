@@ -1,77 +1,94 @@
 <?php
+require_once __DIR__ . '/../models/Pet.php';
 require_once __DIR__ . '/../models/Appointment.php';
+require_once __DIR__ . '/../models/Employee.php';
 
 class AppointmentController {
-    // GET /appointment/index
     public function index() {
         $appointmentModel = new Appointment();
-        $appointments = $appointmentModel->findAll();
+        $appointments = $appointmentModel->findAllWithDetails();
+
+        // Cargar la vista
         require_once __DIR__ . '/../views/appointment/list.php';
     }
 
-    // GET|POST /appointment/create
     public function create() {
+        $petModel = new Pet();
+        $employeeModel = new Employee();
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Recoger datos del formulario
             $appointment = new Appointment();
-            $appointment->pet_id = $_POST['pet_id'] ?? null;
-            $appointment->date = $_POST['date'] ?? null;
-            $appointment->time = $_POST['time'] ?? null;
-            $appointment->description = $_POST['description'] ?? '';
-            $appointment->store_id = $_POST['store_id'] ?? null;
-            $appointment->status = $_POST['status'] ?? 'pending';
+            $appointment->pet_id = $_POST['pet_id'];
+            $appointment->date = $_POST['date'];
+            $appointment->time = $_POST['time'];
+            $appointment->description = $_POST['description'];
+            $appointment->store_id = $_POST['store_id'];
+            $appointment->status = $_POST['status'];
             $appointment->assigned_employee_id = $_POST['assigned_employee_id'] ?? null;
 
             if ($appointment->create()) {
                 header('Location: index.php?controller=Appointment&action=index');
                 exit;
             } else {
-                echo "Error creando la cita (appointment).";
+                echo "Error al crear la cita.";
             }
         } else {
-            // Mostrar formulario
+            $pets = $petModel->findAll();
+            $employees = $employeeModel->findAll();
             require_once __DIR__ . '/../views/appointment/create.php';
         }
     }
 
-    // GET|POST /appointment/edit
     public function edit() {
         $appointmentModel = new Appointment();
+        $petModel = new Pet();
+        $employeeModel = new Employee();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Actualizar
             $appointment = $appointmentModel->findById($_POST['appointment_id']);
             if ($appointment) {
-                $appointment->pet_id = $_POST['pet_id'] ?? $appointment->pet_id;
-                $appointment->date = $_POST['date'] ?? $appointment->date;
-                $appointment->time = $_POST['time'] ?? $appointment->time;
-                $appointment->description = $_POST['description'] ?? $appointment->description;
-                $appointment->store_id = $_POST['store_id'] ?? $appointment->store_id;
-                $appointment->status = $_POST['status'] ?? $appointment->status;
-                $appointment->assigned_employee_id = $_POST['assigned_employee_id'] ?? $appointment->assigned_employee_id;
+                $appointment->pet_id = $_POST['pet_id'];
+                $appointment->date = $_POST['date'];
+                $appointment->time = $_POST['time'];
+                $appointment->description = $_POST['description'];
+                $appointment->status = $_POST['status'];
+                $appointment->assigned_employee_id = $_POST['assigned_employee_id'] ?? null;
 
                 if ($appointment->update()) {
                     header('Location: index.php?controller=Appointment&action=index');
                     exit;
                 } else {
-                    echo "Error actualizando la cita (appointment).";
+                    echo "Error al actualizar la cita.";
                 }
             }
         } else {
-            // Mostrar form con datos existentes
             $appointment_id = $_GET['appointment_id'] ?? null;
             $appointment = $appointmentModel->findById($appointment_id);
+
+            if (!$appointment) {
+                echo "Cita no encontrada.";
+                exit;
+            }
+
+            $pets = $petModel->findAll();
+            $employees = $employeeModel->findAll();
+
             require_once __DIR__ . '/../views/appointment/edit.php';
         }
     }
 
-    // GET /appointment/delete
     public function delete() {
+        $appointmentModel = new Appointment();
+
         if (isset($_GET['appointment_id'])) {
-            $appointmentModel = new Appointment();
-            $appointmentModel->delete($_GET['appointment_id']);
+            if ($appointmentModel->delete($_GET['appointment_id'])) {
+                header('Location: index.php?controller=Appointment&action=index');
+                exit;
+            } else {
+                echo "Error al eliminar la cita.";
+            }
+        } else {
+            echo "Cita no encontrada.";
         }
-        header('Location: index.php?controller=Appointment&action=index');
-        exit;
     }
 }

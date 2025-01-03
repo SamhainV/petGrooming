@@ -19,12 +19,28 @@ class Pet {
     /**
      * Obtiene todos los registros de la tabla pet.
      */
-    public function findAll() {
-        $sql = "SELECT * FROM pet";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_CLASS, 'Pet');
-    }
+
+/**
+ * Obtiene todos los registros de la tabla pet, incluyendo el nombre completo del dueño.
+ */
+public function findAll() {
+    $sql = "
+        SELECT 
+            p.pet_id,
+            p.name,
+            p.age,
+            p.type,
+            p.photo,
+            CONCAT(c.name, ' ', c.last_name, ' ', c.second_last_name) AS owner_name
+        FROM 
+            pet p
+        JOIN 
+            customer c ON p.customer_id = c.customer_id
+    ";
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_OBJ);
+}
 
     /**
      * Obtiene un registro por su ID.

@@ -29,7 +29,7 @@
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Edad</th>
-                    <th>Cliente ID</th>
+                    <th>Dueño</th>
                     <th>Tipo</th>
                     <th>Foto</th>
                 </tr>
@@ -40,7 +40,7 @@
                         <td><?php echo htmlspecialchars($pet->pet_id); ?></td>
                         <td><?php echo htmlspecialchars($pet->name); ?></td>
                         <td><?php echo htmlspecialchars($pet->age); ?> años</td>
-                        <td><?php echo htmlspecialchars($pet->customer_id); ?></td>
+                        <td><?php echo htmlspecialchars($pet->owner_name); ?></td>
                         <td><?php echo htmlspecialchars($pet->type === 'dog' ? 'Perro' : 'Gato'); ?></td>
                         <td>
                             <?php if (!empty($pet->photo)): ?>

@@ -68,31 +68,23 @@ class Appointment {
      * Actualiza los datos de la cita actual en la tabla `appointment`.
      * Retorna `true` si la actualización fue exitosa, `false` en caso contrario.
      */
-    public function update() {
+
+     public function update() {
         $sql = "UPDATE appointment 
-                SET pet_id = :pet_id,
-                    date = :date,
-                    time = :time,
-                    description = :description,
-                    store_id = :store_id,
-                    status = :status,
+                SET pet_id = :pet_id, date = :date, time = :time, 
+                    description = :description, status = :status, 
                     assigned_employee_id = :assigned_employee_id
                 WHERE appointment_id = :appointment_id";
-
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':appointment_id', $this->appointment_id, PDO::PARAM_INT);
         $stmt->bindValue(':pet_id', $this->pet_id, PDO::PARAM_INT);
         $stmt->bindValue(':date', $this->date);
         $stmt->bindValue(':time', $this->time);
         $stmt->bindValue(':description', $this->description);
-        $stmt->bindValue(':store_id', $this->store_id, PDO::PARAM_INT);
         $stmt->bindValue(':status', $this->status);
-        $stmt->bindValue(':assigned_employee_id', $this->assigned_employee_id, 
-                         is_null($this->assigned_employee_id) ? PDO::PARAM_NULL : PDO::PARAM_INT);
-
+        $stmt->bindValue(':assigned_employee_id', $this->assigned_employee_id ?: null, PDO::PARAM_INT);
         return $stmt->execute();
     }
-
     /**
      * Elimina un registro de la tabla `appointment` por su ID.
      * Retorna `true` si la eliminación fue exitosa, `false` en caso contrario.
@@ -103,4 +95,17 @@ class Appointment {
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
+
+    public function findAllWithDetails() {
+        $sql = "SELECT a.*, 
+                       p.name AS pet_name, 
+                       e.name AS employee_name 
+                FROM appointment a
+                LEFT JOIN pet p ON a.pet_id = p.pet_id
+                LEFT JOIN employee e ON a.assigned_employee_id = e.employee_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+    
 }
