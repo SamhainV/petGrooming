@@ -13,6 +13,7 @@
             <tr>
                 <th>ID</th>
                 <th>Mascota</th>
+                <th>Dueño</th>
                 <th>Fecha</th>
                 <th>Hora</th>
                 <th>Descripción</th>
@@ -27,6 +28,7 @@
                     <tr>
                         <td><?= htmlspecialchars($appointment->appointment_id) ?></td>
                         <td><?= htmlspecialchars($appointment->pet_name) ?></td>
+                        <td><?= htmlspecialchars($appointment->owner_name) ?></td>
                         <td><?= htmlspecialchars($appointment->date) ?></td>
                         <td><?= htmlspecialchars($appointment->time) ?></td>
                         <td><?= htmlspecialchars($appointment->description) ?></td>
@@ -41,7 +43,7 @@
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="8">No hay citas registradas.</td>
+                    <td colspan="9">No hay citas registradas.</td>
                 </tr>
             <?php endif; ?>
         </tbody>

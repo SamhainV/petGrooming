@@ -99,9 +99,11 @@ class Appointment {
     public function findAllWithDetails() {
         $sql = "SELECT a.*, 
                        p.name AS pet_name, 
+                       CONCAT(c.name, ' ', c.last_name, ' ', c.second_last_name) AS owner_name, 
                        e.name AS employee_name 
                 FROM appointment a
                 LEFT JOIN pet p ON a.pet_id = p.pet_id
+                LEFT JOIN customer c ON p.customer_id = c.customer_id
                 LEFT JOIN employee e ON a.assigned_employee_id = e.employee_id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
