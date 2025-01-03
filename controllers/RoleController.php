@@ -26,14 +26,14 @@ class RoleController {
         }
     }
 
-    // GET|POST /role/edit
     public function edit() {
         $roleModel = new Role();
+    
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $role = $roleModel->findById($_POST['role_id']);
             if ($role) {
                 $role->name = $_POST['name'] ?? $role->name;
-                
+    
                 if ($role->update()) {
                     header('Location: index.php?controller=Role&action=index');
                     exit;
@@ -44,9 +44,16 @@ class RoleController {
         } else {
             $role_id = $_GET['role_id'] ?? null;
             $role = $roleModel->findById($role_id);
+    
+            if (!$role) {
+                echo "Rol no encontrado.";
+                exit;
+            }
+    
             require_once __DIR__ . '/../views/role/edit.php';
         }
     }
+    
 
     // GET /role/delete
     public function delete() {

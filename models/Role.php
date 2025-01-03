@@ -51,9 +51,10 @@ class Role {
         $sql = "UPDATE role SET name = :name WHERE role_id = :role_id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':role_id', $this->role_id, PDO::PARAM_INT);
-        $stmt->bindValue(':name', $this->name);
+        $stmt->bindValue(':name', $this->name, PDO::PARAM_STR);
         return $stmt->execute();
     }
+    
 
     /**
      * Elimina un rol por su ID.
