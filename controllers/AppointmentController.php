@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../models/Pet.php';
 require_once __DIR__ . '/../models/Appointment.php';
 require_once __DIR__ . '/../models/Employee.php';
+require_once __DIR__ . '/../models/Store.php';
+
 
 class AppointmentController {
     public function index() {
@@ -15,7 +17,8 @@ class AppointmentController {
     public function create() {
         $petModel = new Pet();
         $employeeModel = new Employee();
-
+        $storeModel = new Store(); // Asegúrate de que esta clase esté correctamente incluida.
+    
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $appointment = new Appointment();
             $appointment->pet_id = $_POST['pet_id'];
@@ -25,7 +28,7 @@ class AppointmentController {
             $appointment->store_id = $_POST['store_id'];
             $appointment->status = $_POST['status'];
             $appointment->assigned_employee_id = $_POST['assigned_employee_id'] ?? null;
-
+    
             if ($appointment->create()) {
                 header('Location: index.php?controller=Appointment&action=index');
                 exit;
@@ -33,11 +36,16 @@ class AppointmentController {
                 echo "Error al crear la cita.";
             }
         } else {
+            // Carga las listas de mascotas, empleados y tiendas
             $pets = $petModel->findAll();
             $employees = $employeeModel->findAll();
+            $stores = $storeModel->findAll();
+    
+            // Pasa las listas a la vista
             require_once __DIR__ . '/../views/appointment/create.php';
         }
     }
+    
 
     public function edit() {
         $appointmentModel = new Appointment();
