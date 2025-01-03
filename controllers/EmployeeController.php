@@ -30,29 +30,38 @@ class EmployeeController {
     // GET|POST /employee/edit
     public function edit() {
         $employeeModel = new Employee();
+    
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $employee = $employeeModel->findById($_POST['employee_id']);
             if ($employee) {
                 $employee->name = $_POST['name'] ?? $employee->name;
                 $employee->email = $_POST['email'] ?? $employee->email;
+    
+                // Solo actualizar contraseña si se proporcionó una nueva
                 if (!empty($_POST['password'])) {
-                    // Nuevamente, en un proyecto real, aplicarías un hash
-                    $employee->password = $_POST['password'];
+                    $employee->password = password_hash($_POST['password'], PASSWORD_DEFAULT);
                 }
+    
                 if ($employee->update()) {
                     header('Location: index.php?controller=Employee&action=index');
                     exit;
                 } else {
-                    echo "Error actualizando el empleado.";
+                    echo "Error al actualizar el usuario.";
                 }
             }
         } else {
             $employee_id = $_GET['employee_id'] ?? null;
             $employee = $employeeModel->findById($employee_id);
+    
+            if (!$employee) {
+                echo "Usuario no encontrado.";
+                exit;
+            }
+    
             require_once __DIR__ . '/../views/employee/edit.php';
         }
     }
-
+    
     // GET /employee/delete
     public function delete() {
         if (isset($_GET['employee_id'])) {

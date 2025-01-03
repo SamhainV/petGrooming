@@ -67,18 +67,19 @@ class Employee {
      */
     public function update() {
         $sql = "UPDATE employee 
-                SET name = :name, email = :email, password = :password
+                SET name = :name, email = :email, password = IF(:password IS NOT NULL, :password, password)
                 WHERE employee_id = :employee_id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':employee_id', $this->employee_id, PDO::PARAM_INT);
         $stmt->bindValue(':name', $this->name);
         $stmt->bindValue(':email', $this->email);
-        // Otra vez, en producción, usarías password_hash() y almacenarías el hash
-        $stmt->bindValue(':password', $this->password);
-
+    
+        // Maneja el caso de contraseña vacía
+        $stmt->bindValue(':password', isset($this->password) ? $this->password : null);
+    
         return $stmt->execute();
     }
-
+    
     /**
      * Elimina a un empleado por su ID.
      */
