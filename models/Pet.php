@@ -104,4 +104,24 @@ public function findAll() {
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
+
+
+    public function findByCustomerId($customer_id) {
+        $sql = "
+            SELECT 
+                p.*, 
+                CONCAT(c.name, ' ', c.last_name, ' ', c.second_last_name) AS owner_name 
+            FROM 
+                pet p
+            JOIN 
+                customer c ON p.customer_id = c.customer_id
+            WHERE 
+                p.customer_id = :customer_id
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':customer_id', $customer_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+    
 }

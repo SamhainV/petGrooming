@@ -25,7 +25,7 @@ error_reporting(E_ALL);
         <ul>
             <li><a href="?controller=Store&action=index">Tiendas</a></li>
             <li><a href="?controller=Customer&action=index">Clientes</a></li>
-            <li><a href="?controller=Pet&action=index">Mascotas</a></li>
+            <!--<li><a href="?controller=Pet&action=index">Mascotas</a></li>-->
             <li><a href="?controller=Appointment&action=index">Citas</a></li>
             <li><a href="?controller=Employee&action=index">Empleados</a></li>
             <li><a href="?controller=Role&action=index">Roles</a></li>
