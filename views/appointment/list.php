@@ -28,8 +28,8 @@
                 <?php foreach ($appointments as $appointment): ?>
                     <tr>
                         <td><?= htmlspecialchars($appointment->appointment_id) ?></td>
-                        <td><?= htmlspecialchars($appointment->pet_name ?? 'No definido') ?></td>
-                        <td><?= htmlspecialchars($appointment->owner_name ?? 'No definido') ?></td>
+                        <td><?= htmlspecialchars($appointment->pet_name) ?></td>
+                        <td><?= htmlspecialchars($appointment->owner_name) ?></td>
                         <td><?= htmlspecialchars($appointment->date) ?></td>
                         <td><?= htmlspecialchars($appointment->time) ?></td>
                         <td><?= htmlspecialchars($appointment->description) ?></td>
@@ -37,7 +37,8 @@
                         <td><?= htmlspecialchars($appointment->employee_name ?? 'No asignado') ?></td>
                         <td>
                             <a href="index.php?controller=Appointment&action=edit&appointment_id=<?= $appointment->appointment_id ?>">Editar</a> |
-                            <a href="index.php?controller=Appointment&action=delete&appointment_id=<?= $appointment->appointment_id ?>" onclick="return confirm('¿Estás seguro de eliminar esta cita?')">Eliminar</a>
+                            <a href="index.php?controller=Appointment&action=delete&appointment_id=<?= $appointment->appointment_id ?>" onclick="return confirm('¿Estás seguro de eliminar esta cita?')">Eliminar</a> |
+                            <a href="index.php?controller=Appointment&action=create&pet_id=<?= $appointment->pet_id ?>">Crear Cita</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -48,17 +49,19 @@
             <?php endif; ?>
         </tbody>
 
+
     </table>
 
     <br>
 
-
+    <!--
     <?php if (isset($_GET['pet_id'])): ?>
-        <a href="index.php?controller=Appointment&action=create&pet_id=<?= htmlspecialchars($_GET['pet_id']) ?>">Crear Cita</a>
+        <a href="index.php?controller=Appointment&action=create">Crear Cita</a>
+
     <?php else: ?>
         <a href="#" onclick="alert('Selecciona una mascota para crear una cita.'); return false;">Crear Cita</a>
     <?php endif; ?>
-
+    -->
 
 </body>
 
