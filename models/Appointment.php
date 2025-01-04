@@ -22,11 +22,27 @@ class Appointment {
      * Obtiene todos los registros de la tabla `appointment`.
      */
     public function findAll() {
-        $sql = "SELECT * FROM appointment";
+        $sql = "
+            SELECT 
+                a.*, 
+                p.name AS pet_name, 
+                CONCAT(c.name, ' ', c.last_name, ' ', c.second_last_name) AS owner_name, 
+                e.name AS employee_name 
+            FROM 
+                appointment a
+            LEFT JOIN 
+                pet p ON a.pet_id = p.pet_id
+            LEFT JOIN 
+                customer c ON p.customer_id = c.customer_id
+            LEFT JOIN 
+                employee e ON a.assigned_employee_id = e.employee_id
+        ";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_CLASS, 'Appointment');
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
+    
+     
 
     /**
      * Obtiene un registro de la tabla `appointment` por su ID.
@@ -109,5 +125,32 @@ class Appointment {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
+
+
+    public function findByPetId($pet_id) {
+        $sql = "
+            SELECT 
+                a.*, 
+                p.name AS pet_name, 
+                CONCAT(c.name, ' ', c.last_name, ' ', c.second_last_name) AS owner_name, 
+                e.name AS employee_name 
+            FROM 
+                appointment a
+            LEFT JOIN 
+                pet p ON a.pet_id = p.pet_id
+            LEFT JOIN 
+                customer c ON p.customer_id = c.customer_id
+            LEFT JOIN 
+                employee e ON a.assigned_employee_id = e.employee_id
+            WHERE 
+                a.pet_id = :pet_id
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':pet_id', $pet_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+    
+    
     
 }

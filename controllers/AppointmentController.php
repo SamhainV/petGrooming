@@ -6,14 +6,24 @@ require_once __DIR__ . '/../models/Store.php';
 
 
 class AppointmentController {
+    
     public function index() {
         $appointmentModel = new Appointment();
-        $appointments = $appointmentModel->findAllWithDetails();
-
-        // Cargar la vista
+    
+        // Si no se pasa un contexto específico (pet_id o customer_id)
+        if (!isset($_GET['pet_id']) && !isset($_GET['customer_id'])) {
+            $appointments = $appointmentModel->findAll();
+        } elseif (isset($_GET['pet_id'])) {
+            $appointments = $appointmentModel->findByPetId($_GET['pet_id']);
+        } else {
+            // Aquí puedes manejar citas filtradas por cliente si lo necesitas
+            echo "Especifica un contexto para ver citas.";
+            exit;
+        }
+    
         require_once __DIR__ . '/../views/appointment/list.php';
     }
-
+    
     public function create() {
         $petModel = new Pet();
         $employeeModel = new Employee();

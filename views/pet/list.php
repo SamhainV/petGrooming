@@ -39,7 +39,9 @@
                         </td>
                         <td>
                             <a href="index.php?controller=Pet&action=edit&pet_id=<?= $pet->pet_id ?>">Editar</a> |
-                            <a href="index.php?controller=Pet&action=delete&pet_id=<?= $pet->pet_id ?>&customer_id=<?= htmlspecialchars($_GET['customer_id']) ?>" onclick="return confirm('¿Estás seguro de eliminar esta mascota?')">Eliminar</a>
+                            <a href="index.php?controller=Pet&action=delete&pet_id=<?= $pet->pet_id ?>&customer_id=<?= htmlspecialchars($_GET['customer_id']) ?>" onclick="return confirm('¿Estás seguro de eliminar esta mascota?')">Eliminar</a> |
+                            <a href="index.php?controller=Appointment&action=create&pet_id=<?= $pet->pet_id ?>">Añadir Cita</a> |
+                            <a href="index.php?controller=Appointment&action=index&pet_id=<?= $pet->pet_id ?>">Editar Citas</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
