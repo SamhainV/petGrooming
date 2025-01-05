@@ -7,6 +7,9 @@ if (!isset($_SESSION['user'])) {
 }
 
 // Aquí puedes continuar con el contenido del panel
+// Obtener datos del usuario logueado
+$user = $_SESSION['user'];
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -17,6 +20,9 @@ if (!isset($_SESSION['user'])) {
 <body>
     <h1>Panel Principal</h1>
 
+    <h1>Bienvenido, <?= htmlspecialchars($user['email']) ?></h1>
+    <p>Rol: <?= htmlspecialchars($user['role']) ?></p>
+    
     <!-- Menú -->
     <?php include __DIR__ . '/views/partials/menu.php'; ?>
 
