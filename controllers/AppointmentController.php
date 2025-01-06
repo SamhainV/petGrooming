@@ -24,12 +24,12 @@ class AppointmentController {
         require_once __DIR__ . '/../views/appointment/list.php';
     }
 
-    
+
     public function create() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $appointment = new Appointment();
             $appointment->pet_id = $_POST['pet_id'];
-            $appointment->store_id = $_POST['store_id']; // Capturar el store_id desde el formulario
+            $appointment->store_id = $_POST['store_id'];
             $appointment->date = $_POST['date'];
             $appointment->time = $_POST['time'];
             $appointment->description = $_POST['description'];
@@ -45,18 +45,22 @@ class AppointmentController {
         } else {
             $petModel = new Pet();
             $pets = $petModel->findAll();
+            $selectedPet = isset($_GET['pet_id']) ? $petModel->findById($_GET['pet_id']) : null;
     
             $employeeModel = new Employee();
             $employees = $employeeModel->findAll();
     
-            $storeModel = new Store(); // Añadir carga de tiendas
+            $storeModel = new Store();
             $stores = $storeModel->findAll();
+    
+            // Obtener al empleado logueado desde la sesión
+            $loggedInUserEmail = $_SESSION['user']['email'];
+            $loggedInEmployee = $employeeModel->findByEmail($loggedInUserEmail);
     
             require_once __DIR__ . '/../views/appointment/create.php';
         }
     }
-    
-    
+   
     
     public function edit() {
         $appointmentModel = new Appointment();

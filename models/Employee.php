@@ -44,7 +44,7 @@ class Employee {
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':email', $email);
         $stmt->execute();
-        return $stmt->fetchObject('Employee');
+        return $stmt->fetchObject();
     }
 
     /**

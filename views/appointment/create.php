@@ -57,8 +57,25 @@
         <br><br>
 
         <label for="assigned_employee_id">Empleado Asignado (opcional):</label>
-        <input type="number" name="assigned_employee_id" id="assigned_employee_id" placeholder="ID del empleado">
+        <select name="assigned_employee_id" id="assigned_employee_id">
+            <!-- Mostrar al empleado logueado como opción seleccionada por defecto -->
+            <?php if (isset($loggedInEmployee)): ?>
+                <option value="<?= htmlspecialchars($loggedInEmployee->employee_id) ?>" selected>
+                    <?= htmlspecialchars($loggedInEmployee->name) ?> (Tú)
+                </option>
+            <?php endif; ?>
+
+            <!-- Mostrar a los demás empleados excepto el admin -->
+            <?php foreach ($employees as $employee): ?>
+                <?php if ($employee->role !== 'admin' && $employee->employee_id !== $loggedInEmployee->employee_id): ?>
+                    <option value="<?= htmlspecialchars($employee->employee_id) ?>">
+                        <?= htmlspecialchars($employee->name) ?>
+                    </option>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </select>
         <br><br>
+
 
         <button type="submit">Crear Cita</button>
     </form>
