@@ -57,10 +57,13 @@ class AppointmentController {
             $loggedInUserEmail = $_SESSION['user']['email'];
             $loggedInEmployee = $employeeModel->findByEmail($loggedInUserEmail);
     
+            // Obtener la tienda asociada al empleado logueado
+            $employeeStore = $storeModel->findByEmployeeId($loggedInEmployee->employee_id);
+    
             require_once __DIR__ . '/../views/appointment/create.php';
         }
     }
-   
+    
     
     public function edit() {
         $appointmentModel = new Appointment();

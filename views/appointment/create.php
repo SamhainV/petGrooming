@@ -10,14 +10,27 @@
     <h1>Crear Cita</h1>
 
     <form action="index.php?controller=Appointment&action=create" method="POST">
+
         <label for="store_id">Seleccionar Tienda:</label>
         <select name="store_id" id="store_id" required>
-            <option value="">-- Seleccionar Tienda --</option>
+            <!-- Mostrar la tienda asociada al empleado logueado como opción seleccionada por defecto -->
+            <?php if (isset($employeeStore)): ?>
+                <option value="<?= htmlspecialchars($employeeStore->store_id) ?>" selected>
+                    <?= htmlspecialchars($employeeStore->name) ?> (Tu tienda)
+                </option>
+            <?php endif; ?>
+
+            <!-- Mostrar las demás tiendas -->
             <?php foreach ($stores as $store): ?>
-                <option value="<?= $store->store_id ?>"><?= htmlspecialchars($store->name) ?></option>
+                <?php if (!isset($employeeStore) || $store->store_id !== $employeeStore->store_id): ?>
+                    <option value="<?= htmlspecialchars($store->store_id) ?>">
+                        <?= htmlspecialchars($store->name) ?>
+                    </option>
+                <?php endif; ?>
             <?php endforeach; ?>
         </select>
         <br><br>
+
 
         <label for="pet_id">Seleccionar Mascota:</label>
         <select name="pet_id" id="pet_id" required>

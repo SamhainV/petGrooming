@@ -74,4 +74,16 @@ class Store {
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
+    
+    public function findByEmployeeId($employeeId) {
+        $sql = "SELECT s.* 
+                FROM store s
+                JOIN employee_store es ON s.store_id = es.store_id
+                WHERE es.employee_id = :employee_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':employee_id', $employeeId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchObject();
+    }
+    
 }
