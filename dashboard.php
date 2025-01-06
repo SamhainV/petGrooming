@@ -9,6 +9,10 @@ if (!isset($_SESSION['user'])) {
 
 // Obtener datos del usuario logueado
 $user = $_SESSION['user'];
+$role = $user['role'];
+
+// Determinar el menú a cargar según el rol
+$menuFile = ($role === 'admin') ? __DIR__ . '/views/partials/adminMenu.php' : __DIR__ . '/views/partials/employeeMenu.php';
 ?>
 
 <!DOCTYPE html>
@@ -19,10 +23,10 @@ $user = $_SESSION['user'];
 </head>
 <body>
     <h1>Bienvenido, <?= htmlspecialchars($user['email']) ?></h1>
-    <p>Rol: <?= htmlspecialchars($user['role']) ?></p>
+    <p>Rol: <?= htmlspecialchars($role) ?></p>
 
-    <!-- Incluir el menú -->
-    <?php include __DIR__ . '/views/partials/menu.php'; ?>
+    <!-- Incluir el menú correspondiente -->
+    <?php include $menuFile; ?>
 
     <hr>
 

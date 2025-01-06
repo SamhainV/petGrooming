@@ -1,58 +1,51 @@
 <?php
 session_start();
 
+// Verificar si el usuario está autenticado
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
     exit;
 }
 
-// Aquí puedes continuar con el contenido del panel
-// Obtener datos del usuario logueado
+// Obtener rol del usuario logueado
 $user = $_SESSION['user'];
+$role = $user['role'];
 
-?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Pet Grooming DB - Panel Principal</title>
-</head>
-<body>
-    <h1>Panel Principal</h1>
+// Mapear roles a los controladores permitidos
+$permissions = [
+    'admin' => ['Store', 'Customer', 'Appointment', 'Employee', 'Role', 'EmployeeRole'],
+    'employee' => ['Customer', 'Appointment', 'Pet']
+];
 
-    <h1>Bienvenido, <?= htmlspecialchars($user['email']) ?></h1>
-    <p>Rol: <?= htmlspecialchars($user['role']) ?></p>
-    
-    <!-- Menú -->
-    <?php include __DIR__ . '/views/partials/menu.php'; ?>
+// Obtener el controlador y la acción de la URL
+$controllerName = $_GET['controller'] ?? 'Store';
+$action = $_GET['action'] ?? 'index';
 
-    <hr>
+// Verificar si el controlador está permitido para el rol del usuario
+if (!in_array($controllerName, $permissions[$role] ?? [])) {
+    echo "<h1>Acceso denegado</h1>";
+    exit;
+}
 
-    <?php
-    // Parámetros para determinar el controlador y la acción
-    $controllerName = $_GET['controller'] ?? 'Store';
-    $action = $_GET['action'] ?? 'index';
+// Continuar con la lógica habitual de carga del controlador
+$controllerClass = $controllerName . 'Controller';
+$controllerFile = __DIR__ . '/controllers/' . $controllerClass . '.php';
 
-    $controllerClass = $controllerName . 'Controller';
-    $controllerFile = __DIR__ . '/controllers/' . $controllerClass . '.php';
+if (file_exists($controllerFile)) {
+    require_once $controllerFile;
 
-    if (file_exists($controllerFile)) {
-        require_once $controllerFile;
+    if (class_exists($controllerClass)) {
+        $controllerObject = new $controllerClass();
 
-        if (class_exists($controllerClass)) {
-            $controllerObject = new $controllerClass();
-
-            if (method_exists($controllerObject, $action)) {
-                $controllerObject->$action();
-            } else {
-                echo "<p style='color:red;'>La acción '$action' no existe en el controlador '$controllerClass'.</p>";
-            }
+        if (method_exists($controllerObject, $action)) {
+            $controllerObject->$action();
         } else {
-            echo "<p style='color:red;'>No se encuentra la clase del controlador '$controllerClass'.</p>";
+            echo "<p style='color:red;'>La acción '$action' no existe en el controlador '$controllerClass'.</p>";
         }
     } else {
-        echo "<p style='color:red;'>El controlador '$controllerClass' no está definido.</p>";
+        echo "<p style='color:red;'>No se encuentra la clase del controlador '$controllerClass'.</p>";
     }
-    ?>
-</body>
-</html>
+} else {
+    echo "<p style='color:red;'>El controlador '$controllerClass' no está definido.</p>";
+}
+?>
