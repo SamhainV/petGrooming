@@ -23,13 +23,13 @@ class AppointmentController {
     
         require_once __DIR__ . '/../views/appointment/list.php';
     }
+
     
     public function create() {
-        $petModel = new Pet();
-    
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $appointment = new Appointment();
-            $appointment->pet_id = $_POST['pet_id'] ?? null;
+            $appointment->pet_id = $_POST['pet_id'];
+            $appointment->store_id = $_POST['store_id']; // Capturar el store_id desde el formulario
             $appointment->date = $_POST['date'];
             $appointment->time = $_POST['time'];
             $appointment->description = $_POST['description'];
@@ -43,14 +43,14 @@ class AppointmentController {
                 echo "Error al crear la cita.";
             }
         } else {
-            // Obtener la lista de mascotas si no hay un `pet_id`
+            $petModel = new Pet();
             $pets = $petModel->findAll();
     
-            // Si hay un `pet_id`, selecciona solo esa mascota
-            $selectedPet = null;
-            if (isset($_GET['pet_id'])) {
-                $selectedPet = $petModel->findById($_GET['pet_id']);
-            }
+            $employeeModel = new Employee();
+            $employees = $employeeModel->findAll();
+    
+            $storeModel = new Store(); // Añadir carga de tiendas
+            $stores = $storeModel->findAll();
     
             require_once __DIR__ . '/../views/appointment/create.php';
         }

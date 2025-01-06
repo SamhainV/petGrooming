@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Crear Cita</title>
 </head>
+
 <body>
     <h1>Crear Cita</h1>
 
     <form action="index.php?controller=Appointment&action=create" method="POST">
+        <label for="store_id">Seleccionar Tienda:</label>
+        <select name="store_id" id="store_id" required>
+            <option value="">-- Seleccionar Tienda --</option>
+            <?php foreach ($stores as $store): ?>
+                <option value="<?= $store->store_id ?>"><?= htmlspecialchars($store->name) ?></option>
+            <?php endforeach; ?>
+        </select>
+        <br><br>
+
         <label for="pet_id">Seleccionar Mascota:</label>
         <select name="pet_id" id="pet_id" required>
             <?php if (isset($selectedPet)): ?>
@@ -55,4 +66,5 @@
     <br>
     <a href="index.php?controller=Appointment&action=index">Volver a la lista de citas</a>
 </body>
+
 </html>

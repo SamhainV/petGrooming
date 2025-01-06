@@ -61,24 +61,20 @@ class Appointment {
      * Retorna `true` si la inserción fue exitosa, `false` en caso contrario.
      */
     public function create() {
-        $sql = "INSERT INTO appointment 
-                (pet_id, date, time, description, store_id, status, assigned_employee_id)
-                VALUES 
-                (:pet_id, :date, :time, :description, :store_id, :status, :assigned_employee_id)";
-
+        $sql = "INSERT INTO appointment (pet_id, store_id, date, time, description, status, assigned_employee_id)
+                VALUES (:pet_id, :store_id, :date, :time, :description, :status, :assigned_employee_id)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':pet_id', $this->pet_id, PDO::PARAM_INT);
+        $stmt->bindValue(':store_id', $this->store_id, PDO::PARAM_INT); // Asegúrate de incluir el store_id
         $stmt->bindValue(':date', $this->date);
         $stmt->bindValue(':time', $this->time);
         $stmt->bindValue(':description', $this->description);
-        $stmt->bindValue(':store_id', $this->store_id, PDO::PARAM_INT);
         $stmt->bindValue(':status', $this->status);
-        // Si assigned_employee_id es NULL, se puede enlazar con PDO::PARAM_INT o PDO::PARAM_NULL
-        $stmt->bindValue(':assigned_employee_id', $this->assigned_employee_id, 
-                         is_null($this->assigned_employee_id) ? PDO::PARAM_NULL : PDO::PARAM_INT);
-
+        $stmt->bindValue(':assigned_employee_id', $this->assigned_employee_id, PDO::PARAM_INT);
+    
         return $stmt->execute();
     }
+    
 
     /**
      * Actualiza los datos de la cita actual en la tabla `appointment`.
