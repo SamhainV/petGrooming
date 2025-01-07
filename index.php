@@ -25,6 +25,10 @@ $permissions = [
 $controllerName = $_GET['controller'] ?? 'Store';
 $action = $_GET['action'] ?? 'index';
 
+
+echo "<h1>Controlador: $controllerName, acción: $action</h1>";
+var_dump ($permissions[$role]);
+
 // Verificar si el controlador está permitido para el rol del usuario
 if (!in_array($controllerName, $permissions[$role] ?? [])) {
     echo "<h1>Acceso denegado</h1>";
