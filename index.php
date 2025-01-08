@@ -47,6 +47,28 @@ if (!in_array($controllerName, $permissions[$role] ?? [])) {
     exit;
 }*/
 
+
+// Cargar el menú correcto según el rol del usuario
+$menuFile = $role === 'admin' ? __DIR__ . '/views/partials/adminMenu.php' : __DIR__ . '/views/partials/employeeMenu.php';
+
+// Mostrar el encabezado del panel principal
+echo "<h1>Bienvenido, " . htmlspecialchars($user) . "</h1>";
+echo "<p>Rol: " . htmlspecialchars($role) . "</p>";
+
+// Incluir el menú
+if (file_exists($menuFile)) {
+    include $menuFile;
+} else {
+    echo "<p style='color:red;'>El archivo de menú para el rol '$role' no está definido.</p>";
+}
+// Incluir el enlace de cerrar sesión
+include __DIR__ . '/views/partials/logoutMenu.php';
+
+echo "<hr>";
+
+
+
+
 // Continuar con la lógica habitual de carga del controlador
 $controllerClass = $controllerName . 'Controller';
 $controllerFile = __DIR__ . '/controllers/' . $controllerClass . '.php';
