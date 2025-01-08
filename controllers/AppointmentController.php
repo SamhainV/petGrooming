@@ -64,7 +64,45 @@ class AppointmentController {
         }
     }
     
+    public function edit() {
+        $appointment_id = $_GET['appointment_id'] ?? null;
     
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Procesar la edición de la cita
+            $appointment = new Appointment();
+            $appointment->appointment_id = $appointment_id;
+            $appointment->store_id = $_POST['store_id'];
+            $appointment->pet_id = $_POST['pet_id'];
+            $appointment->date = $_POST['date'];
+            $appointment->time = $_POST['time'];
+            $appointment->description = $_POST['description'];
+            $appointment->status = $_POST['status'];
+            $appointment->assigned_employee_id = $_POST['assigned_employee_id'] ?? null;
+    
+            if ($appointment->update()) {
+                header('Location: index.php?controller=Appointment&action=index');
+                exit;
+            } else {
+                echo "Error al actualizar la cita.";
+            }
+        } else {
+            // Obtener los datos necesarios para la vista
+            $storeModel = new Store();
+            $stores = $storeModel->findAll();
+    
+            $petModel = new Pet();
+            $pets = $petModel->findAll();
+    
+            $appointmentModel = new Appointment();
+            $appointment = $appointmentModel->findById($appointment_id);
+    
+            $employeeModel = new Employee();
+            $employees = $employeeModel->findAllExcludingAdmin();
+    
+            require_once __DIR__ . '/../views/appointment/edit.php';
+        }
+    }
+/*    
     public function edit() {
         $appointmentModel = new Appointment();
         $petModel = new Pet();
@@ -102,7 +140,7 @@ class AppointmentController {
             require_once __DIR__ . '/../views/appointment/edit.php';
         }
     }
-
+*/
     public function delete() {
         $appointmentModel = new Appointment();
 

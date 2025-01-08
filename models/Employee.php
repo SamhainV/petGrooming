@@ -89,4 +89,17 @@ class Employee {
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
+    public function findAllExcludingAdmin() {
+        $sql = "
+            SELECT e.*
+            FROM employee e
+            JOIN employee_role er ON e.employee_id = er.employee_id
+            JOIN role r ON er.role_id = r.role_id
+            WHERE r.name != 'admin'
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_CLASS, 'Employee');
+    }
+    
 }
