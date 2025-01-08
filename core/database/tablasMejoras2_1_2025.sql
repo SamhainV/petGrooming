@@ -110,12 +110,12 @@ CREATE TABLE IF NOT EXISTS appointment (
 
 -- Insertar roles iniciales
 INSERT INTO role (name) 
-VALUES ('admin'), ('user')
+VALUES ('admin'), ('employee')
 ON DUPLICATE KEY UPDATE name = name;
 
 -- Obtener los IDs de los roles
 SET @admin_role_id = (SELECT role_id FROM role WHERE name = 'admin');
-SET @user_role_id = (SELECT role_id FROM role WHERE name = 'user');
+SET @user_role_id = (SELECT role_id FROM role WHERE name = 'employee');
 
 -- Insertar una store para poder referenciarla (ahora con province y country)
 INSERT INTO store (name, nif, street, postal_code, city, province, country)
