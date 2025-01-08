@@ -6,6 +6,13 @@
 </head>
 <body>
     <h1>Editar Cliente</h1>
+
+<?php
+echo "<pre>";
+print_r($customer);
+echo "</pre>";
+?>
+
     <?php if (isset($customer)): ?>
         <form method="POST" action="index.php?controller=Customer&action=edit">
             <input type="hidden" name="customer_id" value="<?= $customer->customer_id ?>">
