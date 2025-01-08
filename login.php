@@ -1,6 +1,7 @@
 <?php
+// login.php
 session_start();
-require_once 'config/database.php'; // Asegúrate de tener acceso a la conexión de la base de datos.
+require_once 'config/database.php'; // Conexión a la base de datos.
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $login_email = $_POST['login_email'] ?? '';
@@ -11,7 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo = $db->getConnection();
 
     // Buscar el usuario por email
-    $sql = "SELECT * FROM employee WHERE email = :email";
+    $sql = "SELECT e.*, r.name AS role
+            FROM employee e
+            LEFT JOIN employee_role er ON e.employee_id = er.employee_id
+            LEFT JOIN role r ON er.role_id = r.role_id
+            WHERE e.email = :email";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':email', $login_email);
     $stmt->execute();
@@ -20,23 +25,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Verificar si el usuario existe y la contraseña es correcta
     if ($user && password_verify($login_password, $user['password'])) {
-        // Crear la sesión del usuario
-        $_SESSION['user'] = [
+        // Crear la sesión del usuario con el rol adecuado
+        $_SESSION['employee'] = [
+            'employee_id' => $user['employee_id'],
             'email' => $user['email'],
-            'role' => $user['role'] ?? 'employee' // Ajustar según tu tabla
+            'name' => $user['name'],
+            'role' => $user['role'] ?? 'employee' // Valor predeterminado si no tiene rol.
         ];
-        header('Location: dashboard.php');
+        header('Location: index.php');
         exit;
     } else {
         $error = "Email o contraseña incorrectos.";
     }
 }
+
 ?>
-
-
-
-
-
 
 <!DOCTYPE html>
 <html lang="es">
