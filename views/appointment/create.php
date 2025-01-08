@@ -14,15 +14,15 @@
         <label for="store_id">Seleccionar Tienda:</label>
         <select name="store_id" id="store_id" required>
             <!-- Mostrar la tienda asociada al empleado logueado como opción seleccionada por defecto -->
-            <?php if (isset($employeeStore)): ?>
-                <option value="<?= htmlspecialchars($employeeStore->store_id) ?>" selected>
-                    <?= htmlspecialchars($employeeStore->name) ?> (Tu tienda)
+            <?php if (isset($_SESSION['employee']['store'])): ?>
+                <option value="<?= htmlspecialchars($_SESSION['employee']['store']['id']) ?>" selected>
+                    <?= htmlspecialchars($_SESSION['employee']['store']['name']) ?> (Tu tienda)
                 </option>
             <?php endif; ?>
 
             <!-- Mostrar las demás tiendas -->
             <?php foreach ($stores as $store): ?>
-                <?php if (!isset($employeeStore) || $store->store_id !== $employeeStore->store_id): ?>
+                <?php if (!isset($_SESSION['employee']['store']) || $store->store_id !== $_SESSION['employee']['store']['id']): ?>
                     <option value="<?= htmlspecialchars($store->store_id) ?>">
                         <?= htmlspecialchars($store->name) ?>
                     </option>
@@ -30,7 +30,6 @@
             <?php endforeach; ?>
         </select>
         <br><br>
-
 
         <label for="pet_id">Seleccionar Mascota:</label>
         <select name="pet_id" id="pet_id" required>
@@ -72,15 +71,15 @@
         <label for="assigned_employee_id">Empleado Asignado (opcional):</label>
         <select name="assigned_employee_id" id="assigned_employee_id">
             <!-- Mostrar al empleado logueado como opción seleccionada por defecto -->
-            <?php if (isset($loggedInEmployee)): ?>
-                <option value="<?= htmlspecialchars($loggedInEmployee->employee_id) ?>" selected>
-                    <?= htmlspecialchars($loggedInEmployee->name) ?> (Tú)
+            <?php if (isset($_SESSION['employee'])): ?>
+                <option value="<?= htmlspecialchars($_SESSION['employee']['id']) ?>" selected>
+                    <?= htmlspecialchars($_SESSION['employee']['name']) ?> (Tú)
                 </option>
             <?php endif; ?>
 
             <!-- Mostrar a los demás empleados excepto el admin -->
             <?php foreach ($employees as $employee): ?>
-                <?php if ($employee->role !== 'admin' && $employee->employee_id !== $loggedInEmployee->employee_id): ?>
+                <?php if ($employee->role !== 'admin' && $employee->employee_id !== $_SESSION['employee']['id']): ?>
                     <option value="<?= htmlspecialchars($employee->employee_id) ?>">
                         <?= htmlspecialchars($employee->name) ?>
                     </option>
@@ -88,7 +87,6 @@
             <?php endforeach; ?>
         </select>
         <br><br>
-
 
         <button type="submit">Crear Cita</button>
     </form>
