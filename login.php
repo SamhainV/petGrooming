@@ -8,6 +8,7 @@ session_start();
 require_once 'config/database.php'; // Conexión a la base de datos.
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
     $login_email = $_POST['login_email'] ?? '';
     $login_password = $_POST['login_password'] ?? '';
 

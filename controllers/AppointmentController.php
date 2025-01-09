@@ -54,11 +54,22 @@ class AppointmentController {
             $stores = $storeModel->findAll();
     
             // Obtener al empleado logueado desde la sesión
-            $loggedInUserEmail = $_SESSION['user']['email'];
-            $loggedInEmployee = $employeeModel->findByEmail($loggedInUserEmail);
+            if (isset($_SESSION['employee']['email'])) {
+                $loggedInUserEmail = $_SESSION['employee']['email'];
+                $loggedInEmployee = $employeeModel->findByEmail($loggedInUserEmail);
     
-            // Obtener la tienda asociada al empleado logueado
-            $employeeStore = $storeModel->findByEmployeeId($loggedInEmployee->employee_id);
+                // Validar si el empleado fue encontrado
+                if (!$loggedInEmployee) {
+                    echo "Empleado no encontrado.";
+                    exit;
+                }
+    
+                // Obtener la tienda asociada al empleado logueado
+                $employeeStore = $storeModel->findByEmployeeId($loggedInEmployee->employee_id);
+            } else {
+                echo "Usuario no autenticado.";
+                exit;
+            }
     
             require_once __DIR__ . '/../views/appointment/create.php';
         }

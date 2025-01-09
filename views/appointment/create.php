@@ -72,7 +72,7 @@
         <select name="assigned_employee_id" id="assigned_employee_id">
             <!-- Mostrar al empleado logueado como opción seleccionada por defecto -->
             <?php if (isset($_SESSION['employee'])): ?>
-                <option value="<?= htmlspecialchars($_SESSION['employee']['id']) ?>" selected>
+                <option value="<?= htmlspecialchars($_SESSION['employee']['employee_id']) ?>" selected>
                     <?= htmlspecialchars($_SESSION['employee']['name']) ?> (Tú)
                 </option>
             <?php endif; ?>

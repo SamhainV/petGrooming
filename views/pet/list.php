@@ -8,7 +8,7 @@
     <h1>Lista de Mascotas</h1>
 
     <!-- Enlace para añadir una nueva mascota -->
-    <a href="index.php?controller=Pet&action=create&customer_id=<?= htmlspecialchars($_GET['customer_id']) ?>">Añadir Mascota</a>
+    <a href="index.php?controller=Pet&action=create&customer_id=<?= htmlspecialchars($_GET['customer_id'] ?? '') ?>">Añadir Mascota</a>
     <br><br>
 
     <table border="1">
@@ -27,21 +27,21 @@
             <?php if (!empty($pets)): ?>
                 <?php foreach ($pets as $pet): ?>
                     <tr>
-                        <td><?= htmlspecialchars($pet->pet_id) ?></td>
-                        <td><?= htmlspecialchars($pet->name) ?></td>
-                        <td><?= htmlspecialchars($pet->age) ?> años</td>
-                        <td><?= htmlspecialchars($pet->owner_name) ?></td>
-                        <td><?= htmlspecialchars($pet->type) ?></td>
+                        <td><?= htmlspecialchars($pet->pet_id ?? '') ?></td>
+                        <td><?= htmlspecialchars($pet->name ?? '') ?></td>
+                        <td><?= htmlspecialchars($pet->age ?? '') ?> años</td>
+                        <td><?= htmlspecialchars($pet->owner_name ?? 'Sin dueño') ?></td>
+                        <td><?= htmlspecialchars($pet->type ?? '') ?></td>
                         <td>
-                            <?= $pet->photo 
-                                ? '<img src="' . htmlspecialchars($pet->photo) . '" alt="Foto de ' . htmlspecialchars($pet->name) . '" width="50">' 
+                            <?= !empty($pet->photo) 
+                                ? '<img src="' . htmlspecialchars($pet->photo) . '" alt="Foto de ' . htmlspecialchars($pet->name ?? 'Mascota') . '" width="50">' 
                                 : 'Sin foto' ?>
                         </td>
                         <td>
-                            <a href="index.php?controller=Pet&action=edit&pet_id=<?= $pet->pet_id ?>">Editar</a> |
-                            <a href="index.php?controller=Pet&action=delete&pet_id=<?= $pet->pet_id ?>&customer_id=<?= htmlspecialchars($_GET['customer_id']) ?>" onclick="return confirm('¿Estás seguro de eliminar esta mascota?')">Eliminar</a> |
-                            <a href="index.php?controller=Appointment&action=create&pet_id=<?= $pet->pet_id ?>">Añadir Cita</a> |
-                            <a href="index.php?controller=Appointment&action=index&pet_id=<?= $pet->pet_id ?>">Editar Citas</a>
+                            <a href="index.php?controller=Pet&action=edit&pet_id=<?= htmlspecialchars($pet->pet_id ?? '') ?>">Editar</a> |
+                            <a href="index.php?controller=Pet&action=delete&pet_id=<?= htmlspecialchars($pet->pet_id ?? '') ?>&customer_id=<?= htmlspecialchars($_GET['customer_id'] ?? '') ?>" onclick="return confirm('¿Estás seguro de eliminar esta mascota?')">Eliminar</a> |
+                            <a href="index.php?controller=Appointment&action=create&pet_id=<?= htmlspecialchars($pet->pet_id ?? '') ?>">Añadir Cita</a> |
+                            <a href="index.php?controller=Appointment&action=index&pet_id=<?= htmlspecialchars($pet->pet_id ?? '') ?>">Editar Citas</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
