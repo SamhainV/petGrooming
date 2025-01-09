@@ -86,7 +86,12 @@ class Pet {
      * Actualiza los datos de la mascota actual en la tabla pet.
      * Retorna true si el UPDATE fue exitoso, false en caso contrario.
      */
+
+     public function algo() {
+        echo "algo";
+     }
     public function update() {
+        echo "update pet";
         $sql = "UPDATE pet 
                 SET name = :name, 
                     age = :age,

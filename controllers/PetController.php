@@ -44,17 +44,22 @@ class PetController {
 
     // GET|POST /pet/edit
     public function edit() {
+        
         $petModel = new Pet();
     
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        
             $pet = $petModel->findById($_POST['pet_id']);
             if ($pet) {
+                echo "editando mascota";
                 $pet->name = $_POST['name'];
                 $pet->age = $_POST['age'];
                 $pet->type = $_POST['type'];
                 $pet->photo = $_POST['photo'] ?? $pet->photo;
     
                 if ($pet->update()) {
+                    echo "editando mascota";
+                    $pet->algo();
                     header('Location: index.php?controller=Pet&action=index&customer_id=' . $pet->customer_id);
                     exit;
                 } else {
