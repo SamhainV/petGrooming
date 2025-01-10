@@ -7,12 +7,6 @@
 <body>
     <h1>Editar Cliente</h1>
 
-<?php
-echo "<pre>";
-print_r($customer);
-echo "</pre>";
-?>
-
     <?php if (isset($customer)): ?>
         <form method="POST" action="index.php?controller=Customer&action=edit">
             <input type="hidden" name="customer_id" value="<?= $customer->customer_id ?>">
@@ -45,10 +39,38 @@ echo "</pre>";
                    value="<?= htmlspecialchars($customer->store_id) ?>" 
                    required><br><br>
 
+            <!-- SECCIÓN TELÉFONOS -->
+            <label>Teléfonos:</label><br>
+            <div id="phones-wrapper">
+                <?php if (!empty($phones)): ?>
+                    <?php foreach ($phones as $p): ?>
+                        <input type="text" name="phone_numbers[]" value="<?= htmlspecialchars($p['phone_number']) ?>"><br>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <!-- Si no hay teléfonos, al menos un campo vacío -->
+                    <input type="text" name="phone_numbers[]" placeholder="Teléfono"><br>
+                <?php endif; ?>
+            </div>
+            <button type="button" onclick="addPhoneField()">Añadir otro teléfono</button>
+            <br><br>
+
             <input type="submit" value="Actualizar">
         </form>
+
     <?php else: ?>
         <p>No se encontró el cliente para editar.</p>
     <?php endif; ?>
+
+    <script>
+        function addPhoneField() {
+            const container = document.getElementById('phones-wrapper');
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'phone_numbers[]';
+            input.placeholder = 'Teléfono';
+            container.appendChild(input);
+            container.appendChild(document.createElement('br'));
+        }
+    </script>
 </body>
 </html>
