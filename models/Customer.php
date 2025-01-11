@@ -17,8 +17,8 @@ class Customer
 
     public function __construct()
     {
-        $db = new Database();
-        $this->pdo = $db->getConnection();
+        // Utilizamos la conexión única del Singleton
+        $this->pdo = Database::getInstance()->getConnection();
     }
 
     public function findAll()
@@ -35,8 +35,7 @@ class Customer
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-        $customer = $stmt->fetchObject('Customer');
-        return $customer ?: null;
+        return $stmt->fetchObject('Customer') ?: null;
     }
 
     public function create()
@@ -51,7 +50,8 @@ class Customer
         $stmt->bindValue(':email',            $this->email);
         $stmt->bindValue(':store_id',         $this->store_id, PDO::PARAM_INT);
 
-        return $stmt->execute();
+        $stmt->execute();
+        return $this->pdo->lastInsertId(); // Devolvemos el ID del cliente creado
     }
 
     public function update()
@@ -84,9 +84,6 @@ class Customer
     // NUEVOS MÉTODOS para teléfonos
     // ---------------------------
 
-    /**
-     * Obtener todos los teléfonos de un cliente.
-     */
     public function getPhonesByCustomerId($customer_id)
     {
         $sql = "SELECT * FROM customer_phone WHERE customer_id = :customer_id";
@@ -96,9 +93,6 @@ class Customer
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Añadir un teléfono a un cliente.
-     */
     public function addPhoneNumber($customer_id, $phone_number)
     {
         $sql = "INSERT INTO customer_phone (customer_id, phone_number)
@@ -109,9 +103,6 @@ class Customer
         return $stmt->execute();
     }
 
-    /**
-     * Eliminar todos los teléfonos de un cliente (si deseas hacerlo).
-     */
     public function deleteAllPhones($customer_id)
     {
         $sql = "DELETE FROM customer_phone WHERE customer_id = :customer_id";
@@ -120,69 +111,47 @@ class Customer
         return $stmt->execute();
     }
 
-    /**
-     * Método para crear cliente + teléfonos en una sola operación.
-     * - Retorna true/false según el éxito de la transacción.
-     */
     public function createWithPhones($phoneNumbers)
     {
         try {
-            // Iniciamos transacción
             $this->pdo->beginTransaction();
 
-            // Creamos el cliente
             $newId = $this->create();
             if (!$newId) {
-                // Si falla la creación del cliente, hacemos rollback
                 $this->pdo->rollBack();
                 return false;
             }
 
-            // Insertamos cada teléfono
-            if (!empty($phoneNumbers)) {
-                foreach ($phoneNumbers as $phone) {
-                    // Evitar insertar valores vacíos
-                    if (trim($phone) !== '') {
-                        $this->addPhoneNumber($newId, $phone);
-                    }
+            foreach ($phoneNumbers as $phone) {
+                if (trim($phone) !== '') {
+                    $this->addPhoneNumber($newId, $phone);
                 }
             }
 
-            // Si todo va bien, confirmamos
             $this->pdo->commit();
-            return $newId; // Podemos devolver el ID del nuevo cliente
+            return $newId;
         } catch (\Exception $e) {
-            // Si ocurre algún error, hacemos rollback
             $this->pdo->rollBack();
             return false;
         }
     }
 
-    /**
-     * Método para actualizar al cliente y sus teléfonos.
-     * - Estrategia típica: borra todos los teléfonos antiguos y vuelvelos a insertar.
-     */
     public function updateWithPhones($phoneNumbers)
     {
         try {
             $this->pdo->beginTransaction();
 
-            // Actualizar datos básicos del cliente
             $success = $this->update();
             if (!$success) {
                 $this->pdo->rollBack();
                 return false;
             }
 
-            // Borramos todos los teléfonos anteriores
             $this->deleteAllPhones($this->customer_id);
 
-            // Insertamos los nuevos
-            if (!empty($phoneNumbers)) {
-                foreach ($phoneNumbers as $phone) {
-                    if (trim($phone) !== '') {
-                        $this->addPhoneNumber($this->customer_id, $phone);
-                    }
+            foreach ($phoneNumbers as $phone) {
+                if (trim($phone) !== '') {
+                    $this->addPhoneNumber($this->customer_id, $phone);
                 }
             }
 
@@ -193,4 +162,27 @@ class Customer
             return false;
         }
     }
+
+    public function findAllPaginated($offset, $limit) {
+        $sql = "SELECT * FROM customer LIMIT :offset, :limit";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+    
+        $customers = $stmt->fetchAll(PDO::FETCH_CLASS, 'Customer');
+    
+        // Obtener los teléfonos para cada cliente
+        foreach ($customers as $customer) {
+            $customer->phones = $this->getPhonesByCustomerId($customer->customer_id);
+        }
+    
+        return $customers;
+    }
+    public function countAll() {
+        $sql = "SELECT COUNT(*) AS total FROM customer";
+        $stmt = $this->pdo->query($sql);
+        return (int) $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    }
+    
 }

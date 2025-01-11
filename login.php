@@ -7,43 +7,46 @@ error_reporting(E_ALL);
 session_start();
 require_once 'config/database.php'; // Conexión a la base de datos.
 
+// Verificar si la solicitud es POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
     $login_email = $_POST['login_email'] ?? '';
     $login_password = $_POST['login_password'] ?? '';
 
-    // Conexión a la base de datos
-    $db = new Database();
-    $pdo = $db->getConnection();
+    try {
+        // Obtener la conexión única desde la clase Database
+        $pdo = Database::getInstance()->getConnection();
 
-    // Buscar el usuario por email
-    $sql = "SELECT e.*, r.name AS role
-            FROM employee e
-            LEFT JOIN employee_role er ON e.employee_id = er.employee_id
-            LEFT JOIN role r ON er.role_id = r.role_id
-            WHERE e.email = :email";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindValue(':email', $login_email);
-    $stmt->execute();
+        // Buscar el usuario por email
+        $sql = "SELECT e.*, r.name AS role
+                FROM employee e
+                LEFT JOIN employee_role er ON e.employee_id = er.employee_id
+                LEFT JOIN role r ON er.role_id = r.role_id
+                WHERE e.email = :email";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':email', $login_email);
+        $stmt->execute();
 
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Verificar si el usuario existe y la contraseña es correcta
-    if ($user && password_verify($login_password, $user['password'])) {
-        // Crear la sesión del usuario con el rol adecuado
-        $_SESSION['employee'] = [
-            'employee_id' => $user['employee_id'],
-            'email' => $user['email'],
-            'name' => $user['name'],
-            'role' => $user['role'] ?? 'employee' // Valor predeterminado si no tiene rol.
-        ];
-        header('Location: index.php');
-        exit;
-    } else {
-        $error = "Email o contraseña incorrectos.";
+        // Verificar si el usuario existe y la contraseña es correcta
+        if ($user && password_verify($login_password, $user['password'])) {
+            // Crear la sesión del usuario con el rol adecuado
+            $_SESSION['employee'] = [
+                'employee_id' => $user['employee_id'],
+                'email' => $user['email'],
+                'name' => $user['name'],
+                'role' => $user['role'] ?? 'employee' // Valor predeterminado si no tiene rol.
+            ];
+            header('Location: index.php'); // Redirigir al inicio
+            exit;
+        } else {
+            $error = "Email o contraseña incorrectos.";
+        }
+    } catch (PDOException $e) {
+        // Manejar errores de conexión o consulta
+        $error = "Error de conexión: " . $e->getMessage();
     }
 }
-
 ?>
 
 <!DOCTYPE html>
