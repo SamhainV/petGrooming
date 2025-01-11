@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS customer (
     last_name VARCHAR(25) NOT NULL,
     second_last_name VARCHAR(25) NOT NULL,
     address VARCHAR(100),
-    email VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(100) DEFAULT NULL,
     store_id INT NOT NULL,
     FOREIGN KEY (store_id) REFERENCES store(store_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -38,16 +38,6 @@ CREATE TABLE IF NOT EXISTS customer_phone (
     FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-;CREATE TABLE IF NOT EXISTS pet (
-    ;pet_id INT AUTO_INCREMENT PRIMARY KEY,
-    ;name VARCHAR(50) NOT NULL,
-    ;age INT NOT NULL,
-    ;customer_id INT NOT NULL,
-    ;type ENUM('dog', 'cat') NOT NULL,
-    ;photo VARCHAR(255),
-    ;FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE
-;) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE IF NOT EXISTS pet (
     pet_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
@@ -56,10 +46,9 @@ CREATE TABLE IF NOT EXISTS pet (
     type ENUM('dog', 'cat') NOT NULL,
     photo VARCHAR(255),
     sex ENUM('male', 'female') NOT NULL,
-    quality VARCHAR(50) NOT NULL,
+    quality VARCHAR(50) NOT NULL DEFAULT 'standard',
     FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 
 CREATE TABLE IF NOT EXISTS dog (
     pet_id INT PRIMARY KEY,
@@ -119,7 +108,6 @@ CREATE TABLE IF NOT EXISTS appointment (
     FOREIGN KEY (assigned_employee_id) REFERENCES employee(employee_id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
 -- Insertar roles iniciales
 INSERT INTO role (name) 
 VALUES ('admin'), ('employee')
@@ -129,7 +117,7 @@ ON DUPLICATE KEY UPDATE name = name;
 SET @admin_role_id = (SELECT role_id FROM role WHERE name = 'admin');
 SET @user_role_id = (SELECT role_id FROM role WHERE name = 'employee');
 
--- Insertar una store para poder referenciarla (ahora con province y country)
+-- Insertar una store para poder referenciarla
 INSERT INTO store (name, nif, street, postal_code, city, province, country)
 VALUES ('Mowgli', '12345678A', 'Calle el Almendro', '28001', 'Córdoba', 'Córdoba', 'España');
 
@@ -154,10 +142,10 @@ VALUES (@last_customer_id, '957232792'),
        (@last_customer_id, '604189945');
 
 -- Insertar varias pets (todas "cat" en este ejemplo)
-INSERT INTO pet (name, age, customer_id, type, photo)
-VALUES ('Debo', 2, @last_customer_id, 'cat', NULL),
-       ('Bruno', 3, @last_customer_id, 'cat', NULL),
-       ('Jackie', 4, @last_customer_id, 'cat', NULL);
+INSERT INTO pet (name, age, customer_id, type, photo, sex, quality)
+VALUES ('Debo', 2, @last_customer_id, 'cat', NULL, 'female', 'standard'),
+       ('Bruno', 3, @last_customer_id, 'cat', NULL, 'male', 'standard'),
+       ('Jackie', 4, @last_customer_id, 'cat', NULL, 'female', 'standard');
 
 -- Obtener los IDs de las pets recién insertadas
 SET @pet_id1 = LAST_INSERT_ID();
@@ -171,11 +159,10 @@ VALUES (@pet_id1, 'Blanca y negra', 'Nervioso', 'Comun europeo'),
        (@pet_id3, 'Negro', 'Agresivo', 'Comun europeo');
 
 -- Insertar una cita (appointment) para Debo
--- Agregamos los campos 'status' y 'assigned_employee_id' (en este caso, NULL para assigned_employee_id)
 INSERT INTO appointment (pet_id, date, time, description, store_id, status, assigned_employee_id)
 VALUES (@pet_id1, '2024-07-15', '10:40:00', 'bañarla', @last_store_id, 'pending', NULL);
 
--- Insertar el empleado Admin (ahora con campo 'email')
+-- Insertar el empleado Admin
 INSERT INTO employee (name, email, password)
 VALUES ('Admin', 'admin@gmail.com', '$2y$10$73G0DGZZFkHPUHMtL85VUOHLz3K7Fj9jrJrdH/XXd8epLW8ncpIVe');
 
@@ -190,7 +177,7 @@ VALUES (@admin_employee_id, @admin_role_id);
 INSERT INTO employee_store (employee_id, store_id)
 VALUES (@admin_employee_id, @last_store_id);
 
--- Insertar el empleado Antonio (ahora con campo 'email')
+-- Insertar el empleado Antonio
 INSERT INTO employee (name, email, password)
 VALUES ('Antonio', 'antoniomartinezramirez@gmail.com', '$2y$10$T3gtnF9bO3kSFib3AG0B8.EbJBAoUb.IN.tNr9zX/yFfk7EuYcNBO');
 
@@ -204,4 +191,3 @@ VALUES (@antonio_employee_id, @user_role_id);
 -- Asignar el empleado Antonio a la tienda
 INSERT INTO employee_store (employee_id, store_id)
 VALUES (@antonio_employee_id, @last_store_id);
-
