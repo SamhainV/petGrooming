@@ -14,10 +14,10 @@ class Appointment {
     private $pdo;
 
     public function __construct() {
-        $db = new Database();
-        $this->pdo = $db->getConnection();
+        $db = Database::getInstance(); // Utilizar el método estático
+        $this->pdo = $db->getConnection(); // Obtener la conexión PDO
     }
-
+    
     /**
      * Obtiene todos los registros de la tabla `appointment`.
      */

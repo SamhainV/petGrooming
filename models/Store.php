@@ -14,10 +14,10 @@ class Store {
     private $pdo;
 
     public function __construct() {
-        // Crear la conexión a la base de datos
-        $db = new Database();
-        $this->pdo = $db->getConnection();
+        $db = Database::getInstance(); // Utilizar el método estático
+        $this->pdo = $db->getConnection(); // Obtener la conexión PDO
     }
+    
 
     public function findAll() {
         $sql = "SELECT * FROM store";
